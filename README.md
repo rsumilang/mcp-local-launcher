@@ -19,9 +19,30 @@ Communication happens over **stdio** using JSON-RPC 2.0, making it compatible wi
 | Windows | `powershell Start-Process "<app_name>"` | `powershell Start-Process "<url>"` |
 | Linux | exec `<app_name>` directly | `xdg-open "<url>"` |
 
+### Install
+
+One-liner (macOS and Linux)—downloads the latest binary for your system into `~/bin`:
+
+```sh
+curl -sSL https://raw.githubusercontent.com/rsumilang/mcp-local-launcher/main/remote_installer.sh | sh
+```
+
+Ensure `~/bin` is on your `PATH`. Windows: download the `.exe` from the [Releases](https://github.com/rsumilang/mcp-local-launcher/releases) page.
+
 ## Requirements
 
 - [Go 1.21+](https://go.dev/dl/)
+
+## Releases
+
+Pre-built binaries for **Linux** (amd64, arm64), **Windows** (amd64), and **macOS** (amd64, Apple Silicon) are published on the [Releases](https://github.com/rsumilang/mcp-local-launcher/releases) page. Download the archive for your platform, extract the binary, and (optionally) add it to your `PATH`.
+
+To create a new release, push a version tag (e.g. `v0.1.0`). GitHub Actions will build all platforms and attach the binaries to the release:
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
 
 ## Setup
 
@@ -73,6 +94,10 @@ Add the server to `~/Library/Application Support/Claude/claude_desktop_config.js
 
 Replace the `command` value with the full path to the binary if it is not on your `PATH`.
 
+### Claude Code
+
+Same as Claude Desktop: add a `local-launcher` entry under `mcpServers` in your Claude Code config, with `"command": "/path/to/mcp-local-launcher"`.
+
 ### Raycast
 
 In Raycast's MCP extension settings, add a new server with:
@@ -80,6 +105,16 @@ In Raycast's MCP extension settings, add a new server with:
 - **Name**: `local-launcher`
 - **Command**: `/usr/local/bin/mcp-local-launcher` (full path to the binary)
 - **Transport**: `stdio`
+
+### Cursor / VS Code
+
+Add to MCP settings (Cursor: Settings → MCP; VS Code: depends on your MCP extension):
+
+```json
+"local-launcher": {
+  "command": "/usr/local/bin/mcp-local-launcher"
+}
+```
 
 ### Generic stdio client
 

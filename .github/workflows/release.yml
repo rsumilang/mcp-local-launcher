@@ -1,0 +1,88 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'   # e.g. v0.1.0, v1.0.0
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: linux
+            goos: linux
+            goarch: amd64
+            suffix: ""
+          - os: linux
+            goos: linux
+            goarch: arm64
+            suffix: ""
+          - os: windows
+            goos: windows
+            goarch: amd64
+            suffix: ".exe"
+          - os: darwin
+            goos: darwin
+            goarch: amd64
+            suffix: ""
+          - os: darwin
+            goos: darwin
+            goarch: arm64
+            suffix: ""
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: '.go-version'
+
+      - name: Build
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 0
+        run: |
+          go build -ldflags "-s -w" -o mcp-local-launcher${{ matrix.suffix }} .
+
+      - name: Rename artifact (for clarity)
+        run: |
+          BIN="mcp-local-launcher${{ matrix.suffix }}"
+          OUT="mcp-local-launcher-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.suffix }}"
+          mv "$BIN" "$OUT"
+          echo "ASSET_NAME=$OUT" >> $GITHUB_ENV
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-local-launcher-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: ${{ env.ASSET_NAME }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Move artifacts to flat list
+        run: |
+          mkdir -p release
+          find artifacts -type f -exec mv {} release/ \;
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

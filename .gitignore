@@ -3,6 +3,12 @@
 #
 # Binaries for programs and plugins
 mcp-local-launcher
+mcp-local-launcher-darwin
+mcp-local-launcher-darwin-amd64
+mcp-local-launcher-darwin-arm64
+mcp-local-launcher-linux-amd64
+mcp-local-launcher-linux-arm64
+mcp-local-launcher-windows-amd64
 *.exe
 *.exe~
 *.dll
