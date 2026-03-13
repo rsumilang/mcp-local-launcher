@@ -35,6 +35,10 @@ const (
 	CodeInternalError  = -32603
 )
 
+// Sentinel id for error responses when the request id is missing or null.
+// Some MCP clients (e.g. Claude) reject id: null; they expect string or number.
+var sentinelID = json.RawMessage("-1")
+
 // MCP protocol types.
 
 // ServerInfo holds the server's identity information.

@@ -13,7 +13,7 @@ import (
 
 const (
 	serverName      = "local-launcher"
-	serverVersion   = "0.1.0"
+	serverVersion   = "0.0.1"
 	protocolVersion = "2024-11-05"
 )
 
@@ -83,7 +83,7 @@ func serve(r io.Reader, w io.Writer) error {
 
 		var req Request
 		if err := json.Unmarshal(line, &req); err != nil {
-			_ = encoder.Encode(errorResponse(nil, CodeParseError, "parse error: "+err.Error()))
+			_ = encoder.Encode(errorResponse(sentinelID, CodeParseError, "parse error: "+err.Error()))
 			continue
 		}
 
@@ -188,7 +188,11 @@ func successResponse(id json.RawMessage, result interface{}) *Response {
 }
 
 // errorResponse constructs a JSON-RPC 2.0 error response.
+// If id is missing or null, uses sentinelID so strict clients (e.g. Claude) accept the response.
 func errorResponse(id json.RawMessage, code int, message string) *Response {
+	if len(id) == 0 || string(id) == "null" {
+		id = sentinelID
+	}
 	return &Response{
 		JSONRPC: "2.0",
 		ID:      id,
