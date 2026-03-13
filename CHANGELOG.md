@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+
+## [0.1.0] - 2025-03-13
+
+### Added
+
+- `open_path` — open a file or folder with the default application (e.g. folder in Finder/Explorer, file in default app)
+- `reveal_in_finder` — reveal a file or folder in the system file manager and select it
+- `open_with_app` — open a URL or file with a specific application (e.g. URL in Chrome, file in VS Code)
+- golangci-lint configuration (`.golangci.yml`) and CI workflow that runs lint + tests on push and pull requests
+
 ## [0.0.2] - 2025-03-13
 
 ### Fixed
@@ -23,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - One-liner install script (`remote_installer.sh`) with colored output and MCP config snippets
 - `.go-version` for version managers (goenv, asdf, gvm)
 
-[Unreleased]: https://github.com/rsumilang/mcp-local-launcher/compare/v0.0.2...HEAD
+[Unreleased]: https://github.com/rsumilang/mcp-local-launcher/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/rsumilang/mcp-local-launcher/releases/tag/v0.1.0
 [0.0.2]: https://github.com/rsumilang/mcp-local-launcher/releases/tag/v0.0.2
 [0.0.1]: https://github.com/rsumilang/mcp-local-launcher/releases/tag/v0.0.1

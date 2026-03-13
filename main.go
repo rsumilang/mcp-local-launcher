@@ -13,7 +13,7 @@ import (
 
 const (
 	serverName      = "local-launcher"
-	serverVersion   = "0.0.1"
+	serverVersion   = "0.1.0"
 	protocolVersion = "2024-11-05"
 )
 
@@ -45,6 +45,52 @@ var availableTools = []Tool{
 				},
 			},
 			Required: []string{"url"},
+		},
+	},
+	{
+		Name:        "open_path",
+		Description: "Open a file or folder with the default application (e.g. open a folder in Finder/Explorer, or a file in its default app).",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {
+					Type:        "string",
+					Description: "Absolute or relative path, or path starting with ~ for home (e.g. \"~/Documents\", \"/path/to/file.pdf\").",
+				},
+			},
+			Required: []string{"path"},
+		},
+	},
+	{
+		Name:        "reveal_in_finder",
+		Description: "Reveal a file or folder in the system file manager (Finder on macOS, Explorer on Windows) and select it.",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"path": {
+					Type:        "string",
+					Description: "Absolute or relative path, or path starting with ~ for home.",
+				},
+			},
+			Required: []string{"path"},
+		},
+	},
+	{
+		Name:        "open_with_app",
+		Description: "Open a URL or file with a specific application (e.g. open a URL in Chrome, or a file in VS Code).",
+		InputSchema: InputSchema{
+			Type: "object",
+			Properties: map[string]Property{
+				"app_name": {
+					Type:        "string",
+					Description: "Name of the application (e.g. \"Google Chrome\", \"Visual Studio Code\").",
+				},
+				"target": {
+					Type:        "string",
+					Description: "URL or file path to open with the app.",
+				},
+			},
+			Required: []string{"app_name", "target"},
 		},
 	},
 }
@@ -150,11 +196,12 @@ func handleToolsCall(req Request) *Response {
 	if err := json.Unmarshal(req.Params, &params); err != nil {
 		return errorResponse(req.ID, CodeInvalidParams, "invalid params: "+err.Error())
 	}
+	if params.Arguments == nil {
+		params.Arguments = make(map[string]interface{})
+	}
 
-	var (
-		msg    string
-		toolErr error
-	)
+	var msg string
+	var toolErr error
 
 	switch params.Name {
 	case "open_app":
@@ -163,6 +210,16 @@ func handleToolsCall(req Request) *Response {
 	case "open_url":
 		url, _ := params.Arguments["url"].(string)
 		msg, toolErr = openURL(url)
+	case "open_path":
+		path, _ := params.Arguments["path"].(string)
+		msg, toolErr = openPath(path)
+	case "reveal_in_finder":
+		path, _ := params.Arguments["path"].(string)
+		msg, toolErr = revealInFinder(path)
+	case "open_with_app":
+		appName, _ := params.Arguments["app_name"].(string)
+		target, _ := params.Arguments["target"].(string)
+		msg, toolErr = openWithApp(appName, target)
 	default:
 		return errorResponse(req.ID, CodeInvalidParams, fmt.Sprintf("unknown tool: %s", params.Name))
 	}

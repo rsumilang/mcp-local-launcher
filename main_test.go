@@ -47,15 +47,11 @@ func decodeResponse(t *testing.T, buf *bytes.Buffer) Response {
 }
 
 // runServe feeds input to serve() and returns what was written to the output buffer.
+// serve returns io.EOF when the reader is exhausted, which is expected and ignored here.
 func runServe(t *testing.T, input string) *bytes.Buffer {
 	t.Helper()
 	out := &bytes.Buffer{}
-	err := serve(strings.NewReader(input), out)
-	// EOF is the expected exit condition.
-	if err != nil && err.Error() != "EOF" {
-		// io.EOF may be returned directly or wrapped; just tolerate it
-		// only unexpected errors fail the test.
-	}
+	_ = serve(strings.NewReader(input), out)
 	return out
 }
 
@@ -105,14 +101,14 @@ func TestDispatch_ToolsList(t *testing.T) {
 	if err := json.Unmarshal(b, &result); err != nil {
 		t.Fatalf("unmarshal ListToolsResult: %v", err)
 	}
-	if len(result.Tools) != 2 {
-		t.Errorf("expected 2 tools, got %d", len(result.Tools))
+	if len(result.Tools) != 5 {
+		t.Errorf("expected 5 tools, got %d", len(result.Tools))
 	}
 	names := map[string]bool{}
 	for _, tool := range result.Tools {
 		names[tool.Name] = true
 	}
-	for _, want := range []string{"open_app", "open_url"} {
+	for _, want := range []string{"open_app", "open_url", "open_path", "reveal_in_finder", "open_with_app"} {
 		if !names[want] {
 			t.Errorf("tool %q not found in list", want)
 		}
@@ -202,12 +198,26 @@ func TestHandleToolsCall_MissingURL(t *testing.T) {
 	}
 }
 
+func TestHandleToolsCall_NilArguments(t *testing.T) {
+	// Client may send "arguments": null; must not panic and should return a valid response.
+	params := []byte(`{"name":"open_app","arguments":null}`)
+	req := Request{JSONRPC: "2.0", ID: json.RawMessage(`6`), Method: "tools/call", Params: params}
+	resp := dispatch(req)
+	if resp == nil {
+		t.Fatal("expected non-nil response")
+	}
+	// Should get success envelope with isError content (empty app_name).
+	if resp.Error != nil {
+		t.Fatalf("expected success envelope with isError content, got JSON-RPC error: %v", resp.Error)
+	}
+}
+
 func TestHandleToolsCall_UnknownTool(t *testing.T) {
 	params, _ := json.Marshal(CallToolParams{
 		Name:      "nonexistent_tool",
 		Arguments: map[string]interface{}{},
 	})
-	req := Request{JSONRPC: "2.0", ID: json.RawMessage(`6`), Method: "tools/call", Params: params}
+	req := Request{JSONRPC: "2.0", ID: json.RawMessage(`7`), Method: "tools/call", Params: params}
 	resp := dispatch(req)
 	if resp == nil || resp.Error == nil {
 		t.Fatal("expected JSON-RPC error for unknown tool")
@@ -265,8 +275,8 @@ func TestServe_ToolsList_E2E(t *testing.T) {
 	if err := json.Unmarshal(b, &result); err != nil {
 		t.Fatalf("unmarshal: %v", err)
 	}
-	if len(result.Tools) < 2 {
-		t.Errorf("expected at least 2 tools, got %d", len(result.Tools))
+	if len(result.Tools) < 5 {
+		t.Errorf("expected at least 5 tools, got %d", len(result.Tools))
 	}
 }
 

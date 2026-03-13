@@ -6,18 +6,21 @@ Communication happens over **stdio** using JSON-RPC 2.0, making it compatible wi
 
 ## Tools
 
-| Tool | Description | Parameter |
-|------|-------------|-----------|
+| Tool | Description | Parameters |
+|------|-------------|------------|
 | `open_app` | Open a local application by name | `app_name` (string) |
 | `open_url` | Open a URL in the default browser | `url` (string) |
+| `open_path` | Open a file or folder with the default app | `path` (string) |
+| `reveal_in_finder` | Reveal a file or folder in the file manager (Finder/Explorer) | `path` (string) |
+| `open_with_app` | Open a URL or file with a specific application | `app_name` (string), `target` (string) |
 
 ### OS behavior
 
-| OS | `open_app` | `open_url` |
-|----|-----------|-----------|
-| macOS | `open -a "<app_name>"` | `open "<url>"` |
-| Windows | `powershell Start-Process "<app_name>"` | `powershell Start-Process "<url>"` |
-| Linux | exec `<app_name>` directly | `xdg-open "<url>"` |
+| OS | `open_app` | `open_url` | `open_path` | `reveal_in_finder` | `open_with_app` |
+|----|------------|------------|------------|--------------------|-----------------|
+| macOS | `open -a "<app_name>"` | `open "<url>"` | `open "<path>"` | `open -R "<path>"` | `open -a "<app>" "<target>"` |
+| Windows | `powershell Start-Process "<app_name>"` | `powershell Start-Process "<url>"` | `powershell Start-Process "<path>"` | `explorer /select,<path>` | `Start-Process "<app>" -ArgumentList "<target>"` |
+| Linux | exec `<app_name>` | `xdg-open "<url>"` | `xdg-open "<path>"` | `xdg-open "<parent_dir>"` | `<app_name> "<target>"` |
 
 ### Install
 
@@ -75,6 +78,14 @@ sudo mv mcp-local-launcher /usr/local/bin/
 ```sh
 go test ./...
 ```
+
+## Lint
+
+```sh
+golangci-lint run ./...
+```
+
+Configuration is in [.golangci.yml](.golangci.yml). CI runs the linter on push and pull requests.
 
 ## MCP client configuration
 
@@ -148,7 +159,7 @@ The server implements the following MCP methods:
 {"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"open_url","arguments":{"url":"https://github.com"}}}
 
 // Server → client (stdout)
-{"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2024-11-05","serverInfo":{"name":"local-launcher","version":"0.0.1"},"capabilities":{"tools":{"listChanged":false}}}}
+{"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2024-11-05","serverInfo":{"name":"local-launcher","version":"0.1.0"},"capabilities":{"tools":{"listChanged":false}}}}
 {"jsonrpc":"2.0","id":2,"result":{"tools":[{"name":"open_app",...},{"name":"open_url",...}]}}
 {"jsonrpc":"2.0","id":3,"result":{"content":[{"type":"text","text":"Opened application: Slack"}]}}
 {"jsonrpc":"2.0","id":4,"result":{"content":[{"type":"text","text":"Opened URL: https://github.com"}]}}
