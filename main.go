@@ -13,7 +13,7 @@ import (
 
 const (
 	serverName      = "local-launcher"
-	serverVersion   = "0.1.0"
+	serverVersion   = "0.1.1"
 	protocolVersion = "2024-11-05"
 )
 

@@ -159,7 +159,7 @@ The server implements the following MCP methods:
 {"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"open_url","arguments":{"url":"https://github.com"}}}
 
 // Server → client (stdout)
-{"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2024-11-05","serverInfo":{"name":"local-launcher","version":"0.1.0"},"capabilities":{"tools":{"listChanged":false}}}}
+{"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2024-11-05","serverInfo":{"name":"local-launcher","version":"0.1.1"},"capabilities":{"tools":{"listChanged":false}}}}
 {"jsonrpc":"2.0","id":2,"result":{"tools":[{"name":"open_app",...},{"name":"open_url",...}]}}
 {"jsonrpc":"2.0","id":3,"result":{"content":[{"type":"text","text":"Opened application: Slack"}]}}
 {"jsonrpc":"2.0","id":4,"result":{"content":[{"type":"text","text":"Opened URL: https://github.com"}]}}
