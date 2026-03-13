@@ -1,7 +1,5 @@
-# golangci-lint v2 configuration
+# golangci-lint configuration (v1 format for compatibility with CI)
 # https://golangci-lint.run/usage/configuration/
-
-version: "2"
 
 run:
   timeout: 5m
@@ -15,14 +13,16 @@ linters:
     - ineffassign
     - staticcheck
     - unused
-  settings:
-    govet:
-      enable:
-        - shadow
-  exclusions:
-    rules:
-      # Allow _ = ... in test files (intentional ignored errors)
-      - path: _test\.go
-        linters:
-          - errcheck
-        source: "^\\s*_ = .*$"
+
+linters-settings:
+  govet:
+    enable:
+      - shadow
+
+issues:
+  exclude-rules:
+    # Allow _ = ... in test files (intentional ignored errors)
+    - path: _test\.go
+      linters:
+        - errcheck
+      source: "^\\s*_ = .*$"

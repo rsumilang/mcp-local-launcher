@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2025-03-13
 
+### Fixed
+
+- golangci-lint config: use v1 schema (remove `version`, use `linters-settings` and `issues.exclude-rules`) so CI (golangci-lint 1.64.x) validates successfully
 
 ## [0.1.0] - 2025-03-13
 
@@ -34,7 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - One-liner install script (`remote_installer.sh`) with colored output and MCP config snippets
 - `.go-version` for version managers (goenv, asdf, gvm)
 
-[Unreleased]: https://github.com/rsumilang/mcp-local-launcher/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/rsumilang/mcp-local-launcher/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/rsumilang/mcp-local-launcher/releases/tag/v0.2.1
 [0.1.0]: https://github.com/rsumilang/mcp-local-launcher/releases/tag/v0.1.0
 [0.0.2]: https://github.com/rsumilang/mcp-local-launcher/releases/tag/v0.0.2
 [0.0.1]: https://github.com/rsumilang/mcp-local-launcher/releases/tag/v0.0.1
