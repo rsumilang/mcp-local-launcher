@@ -22,7 +22,7 @@ Communication happens over **stdio** using JSON-RPC 2.0, making it compatible wi
 | Windows | `powershell Start-Process "<app_name>"` | `powershell Start-Process "<url>"` | `powershell Start-Process "<path>"` | `explorer /select,<path>` | `Start-Process "<app>" -ArgumentList "<target>"` |
 | Linux | exec `<app_name>` | `xdg-open "<url>"` | `xdg-open "<path>"` | `xdg-open "<parent_dir>"` | `<app_name> "<target>"` |
 
-### Install
+## Install
 
 One-liner (macOS and Linux)—downloads the latest binary for your system into `~/bin`:
 
